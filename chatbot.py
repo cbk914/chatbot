@@ -1,45 +1,76 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: cbk914
+# Import the OpenAI library
+import openai
 import argparse
-import requests
-import json
 
-class Chatbot:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.endpoint = 'https://api.openai.com/v1/engines/davinci-codex/completions'
-        self.headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {self.api_key}'
-        }
-        self.payload = {
-            'temperature': 0.5,
-            'max_tokens': 2048,
-            'n': 1,
-            'stop': ['\n']
-        }
+# Define a function that securely gets the API key
+def get_api_key():
+    try:
+        with open("apikey.txt", "r") as f:
+            api_key = f.readline().strip()
+            if api_key:
+                return api_key
+    except FileNotFoundError:
+        pass
 
-    def get_chatbot_response(self, input_text):
-        if not input_text.strip():
-            return "Sorry, I didn't catch that. Can you please rephrase your question?"
+    api_key = input("Please enter your OpenAI API key: ").strip()
+    with open("apikey.txt", "w") as f:
+        f.write(api_key)
+    return api_key
 
-        self.payload['prompt'] = input_text
-        response = requests.post(self.endpoint, data=json.dumps(self.payload), headers=self.headers)
+# Set up the OpenAI API client using the secure method of getting the API key:
+openai.api_key = get_api_key()
 
-        if response.status_code == 200:
-            data = json.loads(response.content)
-            return data['choices'][0]['text'].strip()
-        else:
-            return 'Oops! Something went wrong.'
+# Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
+model_engine = "text-davinci-003"
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-a', '--apikey', help='API key for ChatGPT', required=True)
-args = parser.parse_args()
 
-chatbot = Chatbot(api_key=args.apikey)
+# Define a function that sends a message to ChatGPT
+def chat_query(prompt):
+    completions = openai.Completion.create(
+        engine=model_engine,
+        prompt=prompt,
+        max_tokens=2048,
+        n=1,
+        temperature=0.5,
+    )
 
-while True:
-    user_input = input('You: ')
-    chatbot_response = chatbot.get_chatbot_response(user_input)
-    print('Chatbot:', chatbot_response)
+    message = completions.choices[0].text
+    return message
+
+
+# Define a function that handles the conversation
+def conversation_handler(prompt):
+    # Send the prompt to ChatGPT
+    response = chat_query(prompt)
+    print(f"ChatGPT: {response}")
+    
+    # End the conversation if ChatGPT says goodbye
+    if "goodbye" in response.lower():
+        return
+    
+    # Otherwise, get user input and continue the conversation
+    prompt = input("You: ")
+    conversation_handler(prompt)
+
+
+# Main program starts here:
+if __name__ == "__main__":
+    # Define the command-line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--apikey", help="OpenAI API key")
+    args = parser.parse_args()
+
+    # Use the command-line API key if provided, otherwise get it securely
+    if args.apikey:
+        openai.api_key = args.apikey
+    else:
+        openai.api_key = get_api_key()
+
+    # Example of prompt to query
+    prompt = "GPT-3 vs ChatGPT: What is the difference?"
+
+    # Start the conversation
+    conversation_handler(prompt)
