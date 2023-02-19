@@ -2,3 +2,6 @@ requests
 json
 argparse
 openai
+import hashlib
+import stdiomask
+import os
