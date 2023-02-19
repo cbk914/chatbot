@@ -5,6 +5,15 @@
 import openai
 import argparse
 
+title = "GPT CHAT BOT"
+print(r"""
+ \\               =o) 
+ (o>              /\\ 
+_(()_GPT CHAT BOT_\_V_
+ //                \\ 
+                    \\
+""")
+
 # Define a function that securely gets the API key
 def get_api_key():
     try:
