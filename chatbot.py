@@ -8,9 +8,9 @@ import hashlib
 import stdiomask
 import os
 
+# Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
 APIKEY_FILENAME = "apikey.txt"
 TOKEN_LIMIT = 4050
-# Set up the model (more models, visit https://beta.openai.com/docs/models/overview):
 MODEL_ENGINE = "text-davinci-003"
 
 title = "GPT CHAT BOT"
