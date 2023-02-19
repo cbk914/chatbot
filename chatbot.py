@@ -60,7 +60,7 @@ if os.path.isfile(APIKEY_FILENAME):
                 else:
                     print("Invalid API key. Please try again.")
             else:
-                print("Invalid API key. Exiting program.")
+                print("Too many invalid attempts. Exiting program.")
                 exit()
         else:
             api_key = get_api_key()
