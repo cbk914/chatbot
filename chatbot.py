@@ -10,6 +10,7 @@ import os
 
 APIKEY_FILENAME = "apikey.txt"
 TOKEN_LIMIT = 4050
+# Set up the model (more models, visit https://beta.openai.com/docs/models/overview):
 MODEL_ENGINE = "text-davinci-003"
 
 title = "GPT CHAT BOT"
@@ -67,10 +68,6 @@ else:
     api_key = get_api_key()
 
 openai.api_key = api_key
-
-# Set up the model (more models, visit https://beta.openai.com/docs/models/overview):
-model_engine = "text-davinci-003"
-
 
 # Define a function that sends a message to ChatGPT:
 def chat_query(prompt):
