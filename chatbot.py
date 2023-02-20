@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import stdiomask
 import os
+from langdetect import detect
 
 # Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
 APIKEY_FILENAME = "apikey.txt"
