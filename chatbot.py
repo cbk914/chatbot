@@ -93,10 +93,95 @@ def conversation_handler(prompt):
     if "goodbye" in response.lower():
         return
 
-    # Otherwise, get user input and continue the conversation:
-    prompt = input("You: ")
-    conversation_handler(prompt)
+# Define a function that handles the conversation:
+def conversation_handler(prompt):
+    # Send the prompt to ChatGPT:
+    response = chat_query(prompt)
+    print(f"ChatGPT: {response}")
+    
+# Dictionary with translations of "goodbye"
+goodbyes = {
+        "es": ["adiós", "adios", "chao", "hasta luego"],
+        "ca": ["deu", "adeu"],
+        "eu": "agur",
+        "gl": "adeus",
+        "en": "goodbye",
+        "nl": "tot ziens",
+        "fr": "au revoir",
+        "it": "arrivederci",
+        "de": "auf wiedersehen",
+        "pt": "adeus",
+        "ru": "до свидания",
+        "zh": "再见",
+        "ja": "さようなら",
+        "ar": "وداعًا",
+        "bg": "довиждане",
+        "cs": "sbohem",
+        "da": "farvel",
+        "el": "αντίο",
+        "fi": "hyvästi",
+        "he": "להתראות",
+        "hi": "अलविदा",
+        "hr": "zbogom",
+        "hu": "viszlát",
+        "id": "selamat tinggal",
+        "ko": "안녕",
+        "lt": "viso gero",
+        "lv": "uz redzēšanos",
+        "ms": "selamat tinggal",
+        "nb": "ha det",
+        "pl": "do widzenia",
+        "ro": "la revedere",
+        "sk": "do videnia",
+        "sl": "adijo",
+        "sr": "довиђења",
+        "sv": "adjö",
+        "th": "ลาก่อน",
+        "tr": "güle güle",
+        "uk": "до побачення",
+        "vi": "tạm biệt",
+        "fa": "خداحافظ",
+        "bn": "বিদায়",
+        "gu": "અલવિદા",
+        "kn": "ಬೈಯುತ್ತೇನೆ",
+        "mr": "बाय",
+        "pa": "ਅਲਵਿਦਾ",
+        "ta": "பிரவேசனை",
+        "te": "విదాయం",
+        "ur": "خدا حافظ",
+        "en-gb": "cheerio",
+        "en-au": "ta ta",
+        "en-in": "see you later",
+        "pt-br": "tchau",
+        "es-mx": "hasta luego",
+        "fr-ca": "au plaisir",
+        "fr-be": "au revoir",
+        "de-ch": "tschüss",
+        "de-at": "tschüssi",
+        "de-lu": "tschüs",
+        "nl-be": "tot straks",
+        "pt-pt": "tchau",
+        "ar-eg": "مع السلامة",
+        "ar-sa": "مع السلامة",
+        "ar-ae": "مع السلامة",
+}
 
+# Define a function that handles the conversation:
+def conversation_handler(prompt):
+    # Send the prompt to ChatGPT:
+    response = chat_query(prompt)
+    print(f"ChatGPT: {response}")
+    
+    # Detect if the user is saying "goodbye" in a different language
+    lang = "en" # default language is English
+    for key in goodbyes:
+        if any(word in prompt.lower() for word in goodbyes[key]):
+            lang = key
+    
+    # End the conversation if ChatGPT says goodbye in the detected language
+    if any(word in response.lower() for word in goodbyes[lang]):
+        print(f"ChatGPT: {goodbyes[lang][0]}")
+        return
 
 # Main program starts here:
 if __name__ == "__main__":
@@ -104,5 +189,8 @@ if __name__ == "__main__":
         # Start the conversation:
         prompt = input("You: ")
         conversation_handler(prompt)
+        while True:
+            prompt = input("You: ")
+            conversation_handler(prompt)
     except KeyboardInterrupt:
         print("\nExiting...")
