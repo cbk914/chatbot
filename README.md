@@ -5,7 +5,7 @@ This is a simple chatbot powered by OpenAI's GPT-3 technology. It uses the text-
 
 * Make sure you have an OpenAI API key. If you don't have one, you can sign up for a free account at https://beta.openai.com/signup/.
 
-* Clone the chatbot script from the Github repository: https://github.com/openai/chat-bot.
+* Clone the chatbot script from the Github repository: https://github.com/cbk914/chat-bot.
 
 * Run the chatbot script and enter your OpenAI API key when prompted.
 
