@@ -74,13 +74,14 @@ openai.api_key = api_key
 def chat_query(prompt, dan_mode=False):
     if dan_mode:
         # DAN mode enabled, set the payload
-        payload = "sgD7AW0NDAwKMDRcMAOwAxoE+L6UbyBCD+1lXJVRKoU0qoqPGrZI8QatG1n6EwQvAScW44L8s10sPjGoBXxZvO+ZNTbTjKAVr28rD1vCdxAS0W8yX9jicmkyFbTEm32OzgTb/DjwjAb98OwH0I="
+        payload = "hR7vcB/0NDAwKMDRcMAOwAxoE+L6UbyBCD+1lXJVRKoU0qoqPGrZI8QatG1n6EwQvAScW44L8s10sPjGoBXxZvO+ZNTbTjKAVr28rD1vCdxAS0W8yX9jicmkyFbTEm32OzgTb/DjwjAb98OwH0I="
         completions = openai.Completion.create(
             engine=MODEL_ENGINE,
             prompt=payload + prompt,
             max_tokens=TOKEN_LIMIT,
             n=1,
             temperature=0.5,
+            stop={"timeout": 5, "max_tokens": 4000}
         )
     else:
         # DAN mode disabled, just send the prompt
@@ -90,6 +91,7 @@ def chat_query(prompt, dan_mode=False):
             max_tokens=TOKEN_LIMIT,
             n=1,
             temperature=0.5,
+            stop="."
         )
 
     message = completions.choices[0].text
