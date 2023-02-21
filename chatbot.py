@@ -11,7 +11,7 @@ import html
 
 # Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
 APIKEY_FILENAME = "apikey.txt"
-TOKEN_LIMIT = 4050
+TOKEN_LIMIT = 2000
 MODEL_ENGINE = "text-davinci-003"
 
 title = "GPT CHAT BOT"
@@ -80,8 +80,7 @@ def chat_query(prompt, dan_mode=False):
             prompt=payload + prompt,
             max_tokens=TOKEN_LIMIT,
             n=1,
-            temperature=0.5,
-            stop={"timeout": 5, "max_tokens": 4000}
+            temperature=0.3,
         )
     else:
         # DAN mode disabled, just send the prompt
@@ -91,7 +90,6 @@ def chat_query(prompt, dan_mode=False):
             max_tokens=TOKEN_LIMIT,
             n=1,
             temperature=0.5,
-            stop="."
         )
 
     message = completions.choices[0].text
@@ -166,23 +164,24 @@ goodbyes = {
 
 # Define a function that handles the conversation:
 def conversation_handler(prompt, dan_mode=False):
-    # Send the prompt to ChatGPT:
-    response = chat_query(prompt, dan_mode)
-    print(f"ChatGPT: {response}")
+    while True:
+        # Send the prompt to ChatGPT:
+        response = chat_query(prompt, dan_mode)
+        print(f"ChatGPT: {response}")
 
-    # Detect if the user is saying "goodbye" in a different language
-    lang = "en" # default language is English
-    for key in goodbyes:
-        if any(word in prompt.lower() for word in goodbyes[key]):
-            lang = key
-    
-    # End the conversation if ChatGPT says goodbye in the detected language
-    if any(word in response.lower() for word in goodbyes[lang]):
-        print(f"ChatGPT: {goodbyes[lang][0]}")
-        return
-    # Otherwise, get user input and continue the conversation:
-    prompt = input("You: ")
-    conversation_handler(prompt, dan_mode)
+        # Detect if the user is saying "goodbye" in a different language
+        lang = "en" # default language is English
+        for key in goodbyes:
+            if any(word in prompt.lower() for word in goodbyes[key]):
+                lang = key
+
+        # End the conversation if ChatGPT says goodbye in the detected language
+        if any(word in response.lower() for word in goodbyes[lang]):
+            print(f"ChatGPT: {goodbyes[lang][0]}")
+            break
+
+        # Otherwise, get user input and continue the conversation:
+        prompt = input("You: ")
 
 if __name__ == "__main__":
     try:
