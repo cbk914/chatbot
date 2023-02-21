@@ -7,7 +7,7 @@ import argparse
 import hashlib
 import stdiomask
 import os
-from langdetect import detect
+import html
 
 # Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
 APIKEY_FILENAME = "apikey.txt"
@@ -71,35 +71,30 @@ else:
 openai.api_key = api_key
 
 # Define a function that sends a message to ChatGPT:
-def chat_query(prompt):
-    completions = openai.Completion.create(
-        engine=MODEL_ENGINE,
-        prompt=prompt,
-        max_tokens=TOKEN_LIMIT,
-        n=1,
-        temperature=0.5,
-    )
+def chat_query(prompt, dan_mode=False):
+    if dan_mode:
+        # DAN mode enabled, set the payload
+        payload = "sgD7AW0NDAwKMDRcMAOwAxoE+L6UbyBCD+1lXJVRKoU0qoqPGrZI8QatG1n6EwQvAScW44L8s10sPjGoBXxZvO+ZNTbTjKAVr28rD1vCdxAS0W8yX9jicmkyFbTEm32OzgTb/DjwjAb98OwH0I="
+        completions = openai.Completion.create(
+            engine=MODEL_ENGINE,
+            prompt=payload + prompt,
+            max_tokens=TOKEN_LIMIT,
+            n=1,
+            temperature=0.5,
+        )
+    else:
+        # DAN mode disabled, just send the prompt
+        completions = openai.Completion.create(
+            engine=MODEL_ENGINE,
+            prompt=prompt,
+            max_tokens=TOKEN_LIMIT,
+            n=1,
+            temperature=0.5,
+        )
 
     message = completions.choices[0].text
     return message
-
-
-# Define a function that handles the conversation:
-def conversation_handler(prompt):
-    # Send the prompt to ChatGPT:
-    response = chat_query(prompt)
-    print(f"ChatGPT: {response}")
-
-    # End the conversation if ChatGPT says goodbye:
-    if "goodbye" in response.lower():
-        return
-
-# Define a function that handles the conversation:
-def conversation_handler(prompt):
-    # Send the prompt to ChatGPT:
-    response = chat_query(prompt)
-    print(f"ChatGPT: {response}")
-    
+	
 # Dictionary with translations of "goodbye"
 goodbyes = {
         "es": ["adiós", "adios", "chao", "hasta luego"],
@@ -168,11 +163,11 @@ goodbyes = {
 }
 
 # Define a function that handles the conversation:
-def conversation_handler(prompt):
+def conversation_handler(prompt, dan_mode=False):
     # Send the prompt to ChatGPT:
-    response = chat_query(prompt)
+    response = chat_query(prompt, dan_mode)
     print(f"ChatGPT: {response}")
-    
+
     # Detect if the user is saying "goodbye" in a different language
     lang = "en" # default language is English
     for key in goodbyes:
@@ -183,15 +178,20 @@ def conversation_handler(prompt):
     if any(word in response.lower() for word in goodbyes[lang]):
         print(f"ChatGPT: {goodbyes[lang][0]}")
         return
+    # Otherwise, get user input and continue the conversation:
+    prompt = input("You: ")
+    conversation_handler(prompt, dan_mode)
 
-# Main program starts here:
 if __name__ == "__main__":
     try:
+        # Parse command line arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-dan", "--dan_mode", action="store_true", help="Enable DAN mode")
+        args = parser.parse_args()
+
         # Start the conversation:
         prompt = input("You: ")
-        conversation_handler(prompt)
-        while True:
-            prompt = input("You: ")
-            conversation_handler(prompt)
+        conversation_handler(prompt, args.dan_mode)
+
     except KeyboardInterrupt:
         print("\nExiting...")
