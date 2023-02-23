@@ -13,6 +13,7 @@ import html
 APIKEY_FILENAME = "apikey.txt"
 TOKEN_LIMIT = 2000
 MODEL_ENGINE = "text-davinci-003"
+TEMPERATURE = 1
 
 title = "GPT CHAT BOT"
 print(r"""
@@ -80,7 +81,7 @@ def chat_query(prompt, dan_mode=False):
             prompt=payload + prompt,
             max_tokens=TOKEN_LIMIT,
             n=1,
-            temperature=0.3,
+            temperature=TEMPERATURE,
         )
     else:
         # DAN mode disabled, just send the prompt
@@ -89,7 +90,7 @@ def chat_query(prompt, dan_mode=False):
             prompt=prompt,
             max_tokens=TOKEN_LIMIT,
             n=1,
-            temperature=0.5,
+            temperature=TEMPERATURE,
         )
 
     message = completions.choices[0].text
