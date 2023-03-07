@@ -60,16 +60,19 @@ else:
 
 openai.api_key = api_key
 
-# Define a function that sends a message to ChatGPT:
 def chat_query(prompt):
-    completions = openai.api_request("POST", "v1/chat/completions", {
-        "engine": MODEL_ENGINE,
-        "prompt": prompt,
-        "max_tokens": TOKEN_LIMIT,
-        "n": 1,
-        "temperature": 0.5,
-    })
-    message = completions["choices"][0]["text"]
+    completions = openai.Completion.create(
+        engine=MODEL_ENGINE,
+        prompt=prompt,
+        max_tokens=TOKEN_LIMIT,
+        n=1,
+        temperature=0.5,
+        stop=None,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+
+    message = completions.choices[0].text
     return message
 
 # Define a function that handles the conversation:
