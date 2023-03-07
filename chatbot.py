@@ -10,9 +10,10 @@ import os
 
 # Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
 APIKEY_FILENAME = "apikey.txt"
-TOKEN_LIMIT = 4050
-MODEL_ENGINE = "text-davinci-003"
-
+TOKEN_LIMIT = 2500
+# MODEL_ENGINE = "text-davinci-003"
+MODEL_ENGINE = "gpt-3.5-turbo-0301"
+ 
 title = "GPT CHAT BOT"
 print(r"""
  \\               =o)
