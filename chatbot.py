@@ -7,13 +7,16 @@ import argparse
 import hashlib
 import stdiomask
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
-APIKEY_FILENAME = "apikey.txt"
+APIKEY_ENV_VAR = "OPENAI_API_KEY"
 TOKEN_LIMIT = 2500
-# MODEL_ENGINE = "text-davinci-003"
-MODEL_ENGINE = "gpt-3.5-turbo-0301"
- 
+MODEL_ENGINE = "text-davinci-003"
+
 title = "GPT CHAT BOT"
 print(r"""
  \\               =o)
@@ -25,62 +28,62 @@ _(()_GPT CHAT BOT_\_V_
 # Define a function that securely gets the API key:
 def get_api_key():
     try:
-        with open(APIKEY_FILENAME, "r") as f:
-            api_key_hashed = f.readline().strip()
-            if api_key_hashed:
-                while True:
-                    api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
-                    hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
-                    if api_key_hashed == hashed_api_key:
-                        return api_key
-                    else:
-                        print("Invalid API key. Please try again.")
-    except FileNotFoundError:
+        api_key_hashed = os.getenv("OPENAI_API_KEY")
+        if api_key_hashed:
+            while True:
+                api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
+                hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
+                if api_key_hashed == hashed_api_key:
+                    return api_key
+                else:
+                    print("Invalid API key. Please try again.")
+    except KeyError:
         pass
 
     while True:
         api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
         hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
-        with open(APIKEY_FILENAME, "w") as f:
-            f.write(hashed_api_key)
+        with open(".env", "w") as f:
+            f.write(f"{APIKEY_ENV_VAR}={hashed_api_key}")
         return api_key
 
 # Set up the OpenAI API client using the secure method of getting the API key:
-if os.path.isfile(APIKEY_FILENAME):
-    with open(APIKEY_FILENAME, "r") as f:
-        api_key_hashed = f.readline().strip()
-        if api_key_hashed:
-            for i in range(3):
-                try:
-                    api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
-                except KeyboardInterrupt:
-                    exit()
-                hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
-                if api_key_hashed == hashed_api_key:
-                    break
-                else:
-                    print("Invalid API key. Please try again.")
-            else:
-                print("Too many invalid attempts. Exiting program.")
-                exit()
+if os.getenv(APIKEY_ENV_VAR):
+    api_key_hashed = os.getenv(APIKEY_ENV_VAR)
+    for i in range(3):
+        try:
+            api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
+        except KeyboardInterrupt:
+            exit()
+        hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
+        if api_key_hashed == hashed_api_key:
+            break
         else:
-            api_key = get_api_key()
+            print("Invalid API key. Please try again.")
+    else:
+        print("Too many invalid attempts. Exiting program.")
+        exit()
 else:
     api_key = get_api_key()
+    os.environ[APIKEY_ENV_VAR] = hashlib.sha512(api_key.encode()).hexdigest()
 
 openai.api_key = api_key
 
 # Define a function that sends a message to ChatGPT:
 def chat_query(prompt):
-    completions = openai.Completion.create(
-        engine=MODEL_ENGINE,
-        prompt=prompt,
-        max_tokens=TOKEN_LIMIT,
-        n=1,
-        temperature=0.5,
+    completions = openai.api_request(
+        "POST",
+        f"/v1/chat/completions",
+        {
+            "engine": MODEL_ENGINE,
+            "prompt": prompt,
+            "max_tokens": TOKEN_LIMIT,
+            "n": 1,
+            "temperature": 0.5,
+        },
     )
 
-    message = completions.choices[0].text
+    message = completions["choices"][0]["text"]
     return message
 
 
