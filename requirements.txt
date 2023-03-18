@@ -6,4 +6,4 @@ hashlib
 stdiomask
 os
 subprocess
-
+python-dotenv
