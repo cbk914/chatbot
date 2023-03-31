@@ -7,7 +7,7 @@ This is a simple chatbot powered by OpenAI's GPT-3 technology. It uses the gpt-3
 
 * Clone the chatbot script from the Github repository: https://github.com/cbk914/chat-bot.
 
-* Run the chatbot script and enter your OpenAI API key when prompted.
+* Run the chatbot script and enter your OpenAI API key when prompted. The API key is stored hashed, so it must be entered on each execution. To change this behavior and store in .env in plaintext, comment lines 28 to 44, and uncomment lines 47 to 60.
 
 * Begin chatting with the chatbot. You can start by typing a prompt such as "Hello, how are you today?" and the chatbot will respond with a natural language response based on its training from the gpt-3.5-turbo model.
 
