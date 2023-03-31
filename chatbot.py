@@ -7,11 +7,13 @@ import argparse
 import hashlib
 import stdiomask
 import os
+from dotenv import load_dotenv, set_key
+import dotenv
 
 # Set up the model (more models, visit https://beta.openai.com/docs/models/overview)
-APIKEY_FILENAME = "apikey.txt"
+APIKEY_FILENAME = ".env"
 TOKEN_LIMIT = 4050
-MODEL_ENGINE = "text-davinci-003"
+MODEL_ENGINE = "gpt-3.5-turbo"
 
 title = "GPT CHAT BOT"
 print(r"""
@@ -23,25 +25,24 @@ _(()_GPT CHAT BOT_\_V_
 
 # Define a function that securely gets the API key:
 def get_api_key():
+    dotenv.load_dotenv()
     try:
-        with open(APIKEY_FILENAME, "r") as f:
-            api_key_hashed = f.readline().strip()
-            if api_key_hashed:
-                while True:
-                    api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
-                    hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
-                    if api_key_hashed == hashed_api_key:
-                        return api_key
-                    else:
-                        print("Invalid API key. Please try again.")
+        api_key_hashed = os.getenv("OPENAI_API_KEY_HASHED")
+        if api_key_hashed:
+            while True:
+                api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
+                hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
+                if api_key_hashed == hashed_api_key:
+                    return api_key
+                else:
+                    print("Invalid API key. Please try again.")
     except FileNotFoundError:
         pass
 
     while True:
         api_key = stdiomask.getpass("Please enter your OpenAI API key: ").strip()
         hashed_api_key = hashlib.sha512(api_key.encode()).hexdigest()
-        with open(APIKEY_FILENAME, "w") as f:
-            f.write(hashed_api_key)
+        dotenv.set_key(APIKEY_FILENAME, "OPENAI_API_KEY_HASHED", hashed_api_key)
         return api_key
 
 # Set up the OpenAI API client using the secure method of getting the API key:
@@ -71,17 +72,16 @@ openai.api_key = api_key
 
 # Define a function that sends a message to ChatGPT:
 def chat_query(prompt):
-    completions = openai.Completion.create(
-        engine=MODEL_ENGINE,
-        prompt=prompt,
+    completions = openai.ChatCompletion.create(
+        model=MODEL_ENGINE,
+        messages=[{"role": "user", "content": prompt}],
         max_tokens=TOKEN_LIMIT,
         n=1,
-        temperature=0.5,
+        temperature=0.5
     )
 
-    message = completions.choices[0].text
+    message = completions.choices[0].message['content']
     return message
-
 
 # Define a function that handles the conversation:
 def conversation_handler(prompt):
