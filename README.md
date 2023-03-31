@@ -1,5 +1,5 @@
 # chatbot
-This is a simple chatbot powered by OpenAI's GPT-3 technology. It uses the text-davinci-003 model to provide an intelligent and natural language interface for users to interact with. This chatbot can be used for a variety of applications, including customer support, personal assistance, and language learning.
+This is a simple chatbot powered by OpenAI's GPT-3 technology. It uses the gpt-3.5-turbo model to provide an intelligent and natural language interface for users to interact with. This chatbot can be used for a variety of applications, including customer support, personal assistance, and language learning.
 
 # Instructions
 
@@ -9,7 +9,7 @@ This is a simple chatbot powered by OpenAI's GPT-3 technology. It uses the text-
 
 * Run the chatbot script and enter your OpenAI API key when prompted.
 
-* Begin chatting with the chatbot. You can start by typing a prompt such as "Hello, how are you today?" and the chatbot will respond with a natural language response based on its training from the text-davinci-003 model.
+* Begin chatting with the chatbot. You can start by typing a prompt such as "Hello, how are you today?" and the chatbot will respond with a natural language response based on its training from the gpt-3.5-turbo model.
 
 * If you want to end the conversation, simply type "goodbye" and the chatbot will stop responding.
 
