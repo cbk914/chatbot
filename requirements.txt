@@ -1,9 +1,19 @@
-requests
-json
-argparse
-openai
-hashlib
-stdiomask
-os
-subprocess
-dotenv
+# chatbot runtime dependencies.
+#
+# chatbot.py third-party imports: openai (5), stdiomask (8), dotenv (10,11).
+#
+# Removed, standard-library modules that must not be requested from PyPI:
+#   argparse, hashlib, json, os, subprocess
+#
+# dotenv -> python-dotenv: the PyPI name "dotenv" (0.10.5) is an unrelated
+# abandoned project that happens to install a top-level `dotenv` module and
+# would shadow the real library. chatbot.py:34 calls dotenv.set_key(), which
+# only exists in python-dotenv >= 0.19.
+#
+# openai pinned to 0.28.1: chatbot.py:69 calls openai.ChatCompletion.create(),
+# the pre-1.0 SDK. That API was removed in openai 1.0.0, so an unpinned
+# "openai" resolved to a 1.x/3.x SDK that fails with AttributeError at runtime.
+requests==2.31.0
+openai==0.28.1
+python-dotenv==1.0.1
+stdiomask==0.0.3
